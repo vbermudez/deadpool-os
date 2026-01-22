@@ -49,6 +49,7 @@ export class RandomEventGenerator {
   private timers: Map<string, NodeJS.Timeout> = new Map();
   private isRunning: boolean = false;
   private lastEventTime: number = Date.now();
+  private eventCount: number = 0;
 
   constructor(
     private onEvent: (event: RandomEvent) => void,
@@ -113,6 +114,13 @@ export class RandomEventGenerator {
     const event = this.generateEvent(eventType);
 
     if (event) {
+      this.eventCount++;
+      
+      // Unlock achievement after experiencing chaos
+      if (this.eventCount === 5) {
+        this.addAchievement('chaos-survivor');
+      }
+      
       this.onEvent(event);
       this.activeEvents.add(event.id);
 
@@ -188,6 +196,9 @@ export class RandomEventGenerator {
           id,
           type,
           message: `🎬 ${message}`,
+          action: () => {
+            this.addAchievement('fourth-wall-shattered');
+          },
           duration: 7000,
         };
       }

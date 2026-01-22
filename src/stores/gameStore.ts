@@ -16,7 +16,7 @@ interface GameState {
 
 export const useGameStore = create<GameState>()(
   persist(
-    (set, get) => ({
+    (set) => ({
       chimichangaCount: 0,
       clickPower: 1,
       highScore: 0,

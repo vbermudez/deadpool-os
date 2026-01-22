@@ -85,7 +85,7 @@ const VideoCompiler: React.FC = () => {
         const img = new Image();
         img.src = images[i].url;
 
-        await new Promise<void>((resolve, reject) => {
+        await new Promise<void>((resolve) => {
           img.onload = () => resolve();
           img.onerror = () => {
             console.error('Failed to load image:', images[i].url);

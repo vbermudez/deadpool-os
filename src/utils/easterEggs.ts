@@ -37,7 +37,6 @@ export function useKonamiCode(onComplete: () => void) {
   }, [onComplete]);
 }
 
-// Secret click counter on specific elements
 export function useSecretClickCounter(elementId: string, targetClicks: number, onComplete: () => void) {
   useEffect(() => {
     let clicks = 0;
@@ -58,7 +57,6 @@ export function useSecretClickCounter(elementId: string, targetClicks: number, o
   }, [elementId, targetClicks, onComplete]);
 }
 
-// Idle detection
 export function useIdleDetection(idleTimeMs: number, onIdle: () => void) {
   useEffect(() => {
     let timeoutId: NodeJS.Timeout;
@@ -80,7 +78,6 @@ export function useIdleDetection(idleTimeMs: number, onIdle: () => void) {
   }, [idleTimeMs, onIdle]);
 }
 
-// Easter egg manager
 export interface EasterEgg {
   id: string;
   name: string;
@@ -129,9 +126,8 @@ function showEasterEggNotification(eggId: string) {
   };
 
   const message = messages[eggId] || '🥚 Easter Egg Found!';
-  
-  // Create floating notification
   const notification = document.createElement('div');
+
   notification.className = 'fixed top-20 left-1/2 -translate-x-1/2 bg-yellow-500 text-black px-6 py-3 rounded-lg font-bold comic-text z-50 animate-bounce shadow-2xl';
   notification.textContent = message;
   document.body.appendChild(notification);
@@ -142,7 +138,6 @@ function showEasterEggNotification(eggId: string) {
   }, 3000);
 }
 
-// Secret code words in chat
 export function checkForSecretWords(message: string): string[] {
   const secrets: string[] = [];
   const lowerMessage = message.toLowerCase();
@@ -162,7 +157,6 @@ export function checkForSecretWords(message: string): string[] {
   return secrets;
 }
 
-// Hidden developer console message
 export function showSecretConsoleMessage() {
   if (typeof console !== 'undefined') {
     const styles = [

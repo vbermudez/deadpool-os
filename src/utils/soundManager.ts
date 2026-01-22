@@ -1,22 +1,9 @@
-// Sound effects URLs (you can replace these with actual sound files or use Web Audio API)
-export const SOUNDS = {
-  click: '/sounds/click.mp3',
-  success: '/sounds/success.mp3',
-  error: '/sounds/error.mp3',
-  achievement: '/sounds/achievement.mp3',
-  notification: '/sounds/notification.mp3',
-  explosion: '/sounds/explosion.mp3',
-  collect: '/sounds/collect.mp3',
-} as const;
-
 class SoundManager {
   private audioContext: AudioContext | null = null;
-  private soundCache: Map<string, AudioBuffer> = new Map();
   private enabled: boolean = true;
   private volume: number = 0.5;
 
   constructor() {
-    // Initialize on first user interaction to comply with browser autoplay policies
     this.initAudioContext();
   }
 

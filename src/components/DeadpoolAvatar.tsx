@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React from 'react';
 import { Mood } from '../types';
 import { motion } from 'framer-motion';
 

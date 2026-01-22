@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Heart, Zap } from 'lucide-react';
+import { Heart } from 'lucide-react';
 import { useGameStore } from '../stores/gameStore';
 import { useAchievementStore } from '../stores/achievementStore';
 

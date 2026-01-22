@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import ChatInterface from './components/ChatInterface';
 import ChimichangaClicker from './components/ChimichangaClicker';
 import MemeGallery from './components/MemeGallery';
@@ -21,7 +21,7 @@ function App() {
   const [achievementsPanelOpen, setAchievementsPanelOpen] = useState(false);
   const [currentEvent, setCurrentEvent] = useState<RandomEvent | null>(null);
   const [soundEnabled, setSoundEnabled] = useState(true);
-  const [avatarClickCount, setAvatarClickCount] = useState(0);
+  const [, setAvatarClickCount] = useState(0);
   
   const chimichangaCount = useGameStore((state) => state.chimichangaCount);
   const { incrementChimichangas, decrementChimichangas } = useGameStore();

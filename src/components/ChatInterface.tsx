@@ -34,8 +34,6 @@ const ChatInterface: React.FC = () => {
     }
 
     setPlayingVoiceId(messageId);
-    
-    // Unlock achievement for hearing Deadpool's voice
     unlockAchievement('heard-voice');
 
     try {
@@ -81,12 +79,17 @@ const ChatInterface: React.FC = () => {
     };
 
     addMessage(userMessage);
-    
-    // Unlock achievement for first chat
+
     if (messages.length === 0) {
       unlockAchievement('first-chat');
       soundManager.playAchievement();
     }
+    
+    const secretAchievements = checkForSecretWords(userMessage.content);
+    secretAchievements.forEach(achievementId => {
+      unlockAchievement(achievementId as any);
+      soundManager.playAchievement();
+    });
     
     setInput('');
     setIsTyping(true);
