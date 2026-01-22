@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Image as ImageIcon, Loader2, Trash2 } from 'lucide-react';
 import { useImageStore } from '../stores/imageStore';
@@ -12,6 +12,10 @@ const MemeGallery: React.FC = () => {
   const { unlockAchievement } = useAchievementStore();
   const [prompt, setPrompt] = useState('');
 
+  useEffect(() => {
+    setIsGenerating(false);
+  }, [setIsGenerating]);
+
   const handleGenerate = async () => {
     if (!prompt.trim() || isGenerating) return;
 
@@ -21,8 +25,12 @@ const MemeGallery: React.FC = () => {
       const response = await apiService.generateImage(prompt);
 
       if (response.error) {
+        console.error('Image generation error:', response.error);
         alert(`Error: ${response.error}`);
-      } else if (response.url) {
+        return;
+      }
+      
+      if (response.url) {
         const newImage: GeneratedImage = {
           id: Date.now().toString(),
           url: response.url,
@@ -38,10 +46,14 @@ const MemeGallery: React.FC = () => {
         }
         
         setPrompt('');
+      } else {
+        alert('No image URL returned from server');
       }
     } catch (error) {
+      console.error('Image generation failed:', error);
       alert('Failed to generate image. Check your API key and connection.');
     } finally {
+      // Always reset generating state
       setIsGenerating(false);
     }
   };
