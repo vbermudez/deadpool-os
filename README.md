@@ -4,7 +4,7 @@ An AI that thinks it's Deadpool, trapped in your computer, and VERY aware of it.
 
 ## 🎭 About
 
-DeadpoolOS is an interactive desktop application for a coding contest where Deadpool is:
+DeadpoolOS is an interactive web application for a coding contest where Deadpool is:
 - Self-aware he's an AI built for a contest
 - Constantly breaking the fourth wall
 - Judging your code and engineering decisions
@@ -63,20 +63,24 @@ Note: ElevenLabs key is optional. Voice synthesis will be disabled if not provid
 
 ### Running the App
 
-**Development mode:**
+**1. Start the backend server:**
+```bash
+cd server
+npm install
+cp .env.example .env
+# Edit server/.env and add your API keys
+npm run dev
+```
+
+**2. Start the frontend (in a separate terminal):**
 ```bash
 npm run dev
 ```
 
-This will:
-- Start the Vite dev server
-- Launch the Electron app
-- Enable hot-reload for development
+**3. Open browser:**
+Navigate to `http://localhost:5173`
 
-**Build for production:**
-```bash
-npm run electron:build
-```
+**For detailed deployment instructions, see [WEB_DEPLOYMENT.md](WEB_DEPLOYMENT.md)**
 
 ## 🎮 How to Use
 
@@ -134,39 +138,55 @@ The app has 6 tabs at the top:
 
 ## 🛠️ Tech Stack
 
-- **Electron** - Desktop app framework
+**Frontend:**
 - **React** - UI framework
 - **TypeScript** - Type safety
 - **Vite** - Build tool
 - **Tailwind CSS** - Styling
 - **Framer Motion** - Animations
 - **Zustand** - State management with persistence
-- **OpenAI API** - GPT-4 (chat) + DALL-E 3 (images)
-- **ElevenLabs API** - Text-to-speech voice synthesis
-- **Web Audio API** - Procedural sound effects
 - **Canvas API** - Video compilation with MediaRecorder
+- **Web Audio API** - Procedural sound effects
+
+**Backend:**
+- **Express.js** - REST API server
+- **Node.js** - Runtime environment
+- **CORS & Rate Limiting** - Security middleware
+
+**AI Services:**
+- **OpenAI API** - GPT-4 Turbo (chat) + DALL-E 3 (images)
+- **ElevenLabs API** - Text-to-speech voice synthesis
+
+**Features:**
+- Base64 image encoding (no CORS issues)
+- Rate limiting (100 req/15min)
+- Automatic environment detection
 
 ## 📁 Project Structure
 
 ```
 deadpool-os/
-├── electron/          # Electron main & preload
+├── server/            # Express backend
+│   ├── index.js      # API server with chat/image/voice endpoints
+│   ├── package.json  # Backend dependencies
+│   └── .env.example  # Backend environment template
 ├── src/
 │   ├── components/   # React components (Chat, Games, Gallery, Video)
 │   ├── stores/       # Zustand stores (game, conversation, achievements, images)
-│   ├── services/     # Random event generator
-│   ├── utils/        # Sound manager, easter eggs
+│   ├── services/     # API service layer
+│   ├── utils/        # Sound manager, easter eggs, random events
 │   ├── types.ts      # TypeScript types
 │   └── App.tsx       # Main app component
 ├── package.json
-├── vite.config.ts
-└── README.md
+├── vite.config.ts    # Includes /api proxy configuration
+├── README.md
+└── WEB_DEPLOYMENT.md # Deployment guide
 ```
 
 ## 🎯 Contest Submission
 
 **Character:** Deadpool  
-**Type:** Desktop Game-Chatbot Hybrid  
+**Type:** Web Game-Chatbot Hybrid  
 **One-liner:** "An AI that knows it's Deadpool, knows it's in a contest, knows you're judging it, and won't shut up about any of it."
 
 **Features:** 4 mini-games, 18 achievements, voice synthesis, video compilation, random events, easter eggs, and way too much meta-humor.
@@ -188,10 +208,11 @@ Budget-friendly for a contest project!
 - Restart the app after adding the key
 
 **App won't start:**
-- Delete `node_modules` and run `npm install` again
+- Delete `node_modules` in both root and `server/` directories
+- Run `npm install` in both directories
 - Make sure you're using Node.js 18 or higher
-- Check that port 5173 is available
-- Use `npm run dev` (NOT `npm run electron:dev`)
+- Check that ports 3000 (backend) and 5173 (frontend) are available
+- Ensure backend server is running before starting frontend
 
 **Images not generating:**
 - Verify your OpenAI account has DALL-E 3 access
@@ -207,6 +228,16 @@ Budget-friendly for a contest project!
 - Make sure you have at least 2 images generated
 - Clear browser cache and try again
 - Video compilation requires a modern browser (Chrome/Edge recommended)
+
+**Web mode - API 404 errors:**
+- Make sure backend server is running (`cd server && npm run dev`)
+- Backend should be on port 3000
+- Check Vite proxy configuration in `vite.config.ts`
+- Verify both `.env` (root) and `server/.env` have API keys
+
+**CORS errors in web mode:**
+- Backend CORS is configured for `http://localhost:5173`
+- For production, update CORS origin in `server/index.js`
 
 
 ---
