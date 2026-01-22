@@ -71,9 +71,8 @@ router.post('/chat', async (req: Request | any, res: Response) => {
     });
   }
 
-  const body = await req.json();
-  const { message } = body;
-  console.log('Received body:', body);
+  const { message } = req.body;
+  console.log('Received body:', req.body);
   if (!message || typeof message !== 'string') {
     return res.status(400).json({ error: 'Message is required and must be a string' });
   }
