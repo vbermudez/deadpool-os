@@ -150,8 +150,9 @@ The app has 6 tabs at the top:
 
 **Backend:**
 - **Express.js** - REST API server
+- **Serverless** - ... yeah, serverless
 - **Node.js** - Runtime environment
-- **CORS & Rate Limiting** - Security middleware
+- **CORS** - Security middleware
 
 **AI Services:**
 - **OpenAI API** - GPT-4 Turbo (chat) + DALL-E 3 (images)
@@ -166,10 +167,8 @@ The app has 6 tabs at the top:
 
 ```
 deadpool-os/
-├── server/            # Express backend
-│   ├── index.js      # API server with chat/image/voice endpoints
-│   ├── package.json  # Backend dependencies
-│   └── .env.example  # Backend environment template
+├── functions/            # Express backend
+│   └── api.ts      # API server with chat/image/voice endpoints
 ├── src/
 │   ├── components/   # React components (Chat, Games, Gallery, Video)
 │   ├── stores/       # Zustand stores (game, conversation, achievements, images)
@@ -180,7 +179,7 @@ deadpool-os/
 ├── package.json
 ├── vite.config.ts    # Includes /api proxy configuration
 ├── README.md
-└── WEB_DEPLOYMENT.md # Deployment guide
+└── netlify.toml      # Serverless BE deployment
 ```
 
 ## 🎯 Contest Submission

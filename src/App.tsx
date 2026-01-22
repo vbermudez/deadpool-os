@@ -243,7 +243,7 @@ function App() {
 
       <footer className="bg-gray-900 text-gray-400 text-center py-2 text-xs border-t border-gray-800">
         <p>
-          🎭 Contest Entry | Built with Electron, React, TypeScript & too much caffeine |{' '}
+          🎭 Contest Entry | Built with React, TypeScript & too much caffeine |{' '}
           <span className="text-deadpool-red">Deadpool approves... maybe</span>
         </p>
       </footer>
