@@ -25,3 +25,4 @@ release
 *.sw?
 
 package-lock.json
+.env
