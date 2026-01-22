@@ -4,6 +4,24 @@ import OpenAI from 'openai';
 import { ElevenLabsClient } from 'elevenlabs';
 
 const api = express();
+
+api.use(express.json({ limit: '10mb' }));
+api.use(express.urlencoded({ extended: true }));
+
+api.use((req: Request, res: Response, next: Function) => {
+  const allowedOrigin = process.env.FRONTEND_URL || 'http://localhost:5173';
+  res.header('Access-Control-Allow-Origin', allowedOrigin);
+  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+  res.header('Access-Control-Allow-Credentials', 'true');
+
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
+  }
+
+  next();
+});
+
 const router = Router();
 
 let openai: OpenAI | null = null;
@@ -64,7 +82,7 @@ router.get('/health', (req: Request, res: Response) => {
   });
 });
 
-router.post('/chat', async (req: Request | any, res: Response) => {
+router.post('/chat', async (req: Request, res: Response) => {
   if (!openai) {
     return res.status(503).json({ 
       error: 'OpenAI not initialized. Please set OPENAI_API_KEY in .env file.' 
@@ -216,7 +234,7 @@ router.use((req: Request, res: Response) => {
 });
 
 // Error handler
-router.use((err: Error, req: Request, res: Response, next: any) => {
+router.use((err: Error, req: Request, res: Response, next: Function) => {
   console.error('Server error:', err);
   res.status(500).json({ 
     error: process.env.NODE_ENV === 'production' 
