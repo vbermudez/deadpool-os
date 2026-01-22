@@ -1,17 +1,15 @@
-const express = require('express');
-const cors = require('cors');
-const rateLimit = require('express-rate-limit');
-const OpenAI = require('openai');
-const { ElevenLabsClient } = require('elevenlabs');
-require('dotenv').config();
+import express, { Router, Request, Response } from 'express';
+import serverless from 'serverless-http';
+import OpenAI from 'openai';
+import { ElevenLabsClient } from 'elevenlabs';
 
-const app = express();
-const PORT = process.env.PORT || 3000;
+const api = express();
+const router = Router();
 
-let openai = null;
-let elevenlabs = null;
+let openai: OpenAI | null = null;
+let elevenlabs: ElevenLabsClient | null = null;
 
-function initializeOpenAI() {
+function initializeOpenAI(): void {
   const apiKey = process.env.OPENAI_API_KEY;
   
   console.log('Initializing OpenAI...');
@@ -25,7 +23,7 @@ function initializeOpenAI() {
   }
 }
 
-function initializeElevenLabs() {
+function initializeElevenLabs(): void {
   const apiKey = process.env.ELEVENLABS_API_KEY;
   
   console.log('Initializing ElevenLabs...');
@@ -39,41 +37,7 @@ function initializeElevenLabs() {
   }
 }
 
-// Configure CORS - supports comma-separated list of origins
-const allowedOrigins = process.env.FRONTEND_URL 
-  ? process.env.FRONTEND_URL.split(',').map(url => url.trim())
-  : ['http://localhost:5173'];
-
-console.log('🌐 CORS allowed origins:', allowedOrigins);
-
-app.use(cors({
-  origin: (origin, callback) => {
-    // Allow requests with no origin (mobile apps, Postman, etc.)
-    if (!origin) return callback(null, true);
-    
-    if (allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      console.warn('⚠️ CORS blocked origin:', origin);
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
-  credentials: true
-}));
-
-app.use(express.json({ limit: '10mb' }));
-
-// Rate limiting
-const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // Limit each IP to 100 requests per windowMs
-  message: 'Too many requests from this IP, please try again later.'
-});
-
-app.use('/api/', limiter);
-
-// Helper function to determine mood
-function determineMood(response) {
+function determineMood(response: string): string {
   const text = response.toLowerCase();
   
   if (text.includes('chimichanga') || text.includes('taco') || text.includes('food')) {
@@ -89,8 +53,7 @@ function determineMood(response) {
   }
 }
 
-// Health check endpoint
-app.get('/health', (req, res) => {
+router.get('/health', (req: Request, res: Response) => {
   res.json({ 
     status: 'ok', 
     timestamp: new Date().toISOString(),
@@ -101,8 +64,7 @@ app.get('/health', (req, res) => {
   });
 });
 
-// Chat endpoint
-app.post('/api/chat', async (req, res) => {
+router.post('/chat', async (req: Request, res: Response) => {
   if (!openai) {
     return res.status(503).json({ 
       error: 'OpenAI not initialized. Please set OPENAI_API_KEY in .env file.' 
@@ -141,7 +103,7 @@ Never break character. You can reference being in a contest, the code, the user'
     const mood = determineMood(content);
 
     res.json({ content, mood });
-  } catch (error) {
+  } catch (error: Error | any) {
     console.error('Chat error:', error);
     res.status(500).json({ 
       error: error.message || 'Failed to get response from OpenAI' 
@@ -149,8 +111,7 @@ Never break character. You can reference being in a contest, the code, the user'
   }
 });
 
-// Image generation endpoint
-app.post('/api/image', async (req, res) => {
+router.post('/image', async (req: Request, res: Response) => {
   if (!openai) {
     return res.status(503).json({ error: 'OpenAI not initialized' });
   }
@@ -170,19 +131,18 @@ app.post('/api/image', async (req, res) => {
       quality: 'standard',
     });
 
-    const imageUrl = response.data[0]?.url;
+    const imageUrl = response?.data[0]?.url;
     if (!imageUrl) {
       return res.status(500).json({ error: 'No image URL returned' });
     }
 
-    // Download the image and convert to base64 to avoid CORS issues
     const imageResponse = await fetch(imageUrl);
     const arrayBuffer = await imageResponse.arrayBuffer();
     const base64 = Buffer.from(arrayBuffer).toString('base64');
     const dataUrl = `data:image/png;base64,${base64}`;
 
     res.json({ url: dataUrl });
-  } catch (error) {
+  } catch (error: Error | any) {
     console.error('Image generation error:', error);
     res.status(500).json({ 
       error: error.message || 'Failed to generate image' 
@@ -190,8 +150,7 @@ app.post('/api/image', async (req, res) => {
   }
 });
 
-// Voice synthesis endpoint
-app.post('/api/voice', async (req, res) => {
+router.post('/voice', async (req: Request, res: Response) => {
   if (!elevenlabs) {
     return res.status(503).json({ 
       error: 'ElevenLabs not initialized. Please set ELEVENLABS_API_KEY in .env file.' 
@@ -237,7 +196,7 @@ app.post('/api/voice', async (req, res) => {
       audio: base64Audio,
       format: 'mp3',
     });
-  } catch (error) {
+  } catch (error: Error | any) {
     console.error('Voice synthesis error:', error);
     console.error('Error details:', {
       message: error.message,
@@ -252,12 +211,12 @@ app.post('/api/voice', async (req, res) => {
 });
 
 // 404 handler
-app.use((req, res) => {
+router.use((req: Request, res: Response) => {
   res.status(404).json({ error: 'Endpoint not found' });
 });
 
 // Error handler
-app.use((err, req, res, next) => {
+router.use((err: Error, req: Request, res: Response, next: any) => {
   console.error('Server error:', err);
   res.status(500).json({ 
     error: process.env.NODE_ENV === 'production' 
@@ -266,27 +225,9 @@ app.use((err, req, res, next) => {
   });
 });
 
-// Initialize and start server
 initializeOpenAI();
 initializeElevenLabs();
 
-app.listen(PORT, () => {
-  console.log(`\n🚀 DeadpoolOS Server running on http://localhost:${PORT}`);
-  console.log(`📡 API endpoints:`);
-  console.log(`   - POST /api/chat`);
-  console.log(`   - POST /api/image`);
-  console.log(`   - POST /api/voice`);
-  console.log(`   - GET  /health\n`);
-  console.log(`Environment: ${process.env.NODE_ENV || 'development'}\n`);
-});
+api.use('/api', router);
 
-// Graceful shutdown
-process.on('SIGTERM', () => {
-  console.log('SIGTERM signal received: closing HTTP server');
-  process.exit(0);
-});
-
-process.on('SIGINT', () => {
-  console.log('\nSIGINT signal received: closing HTTP server');
-  process.exit(0);
-});
+export const handler = serverless(api);
