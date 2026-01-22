@@ -64,15 +64,16 @@ router.get('/health', (req: Request, res: Response) => {
   });
 });
 
-router.post('/chat', async (req: Request, res: Response) => {
+router.post('/chat', async (req: Request | any, res: Response) => {
   if (!openai) {
     return res.status(503).json({ 
       error: 'OpenAI not initialized. Please set OPENAI_API_KEY in .env file.' 
     });
   }
 
-  const { message } = req.body;
-  console.log('Received body:', req.body);
+  const body = await req.json();
+  const { message } = body;
+  console.log('Received body:', body);
   if (!message || typeof message !== 'string') {
     return res.status(400).json({ error: 'Message is required and must be a string' });
   }
