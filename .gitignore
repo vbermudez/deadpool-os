@@ -24,8 +24,4 @@ release
 *.sln
 *.sw?
 
-# Environment variables
-.env
-.env.local
-.env.*.local
 package-lock.json

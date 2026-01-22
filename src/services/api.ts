@@ -1,7 +1,9 @@
 // API Service - abstracts communication with backend
 // Works with both Electron IPC and HTTP fetch
 
-const API_BASE_URL = '/api';
+// In dev: proxy forwards /api to localhost:3000
+// In prod: use VITE_API_URL env var or default to /api (same domain)
+const API_BASE_URL = import.meta.env.VITE_API_URL || '/api';
 
 interface ChatResponse {
   content?: string;
